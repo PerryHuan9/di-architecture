@@ -14,11 +14,11 @@ import {
 import { IInstantiationService } from "./instantiationService.interface";
 import { ServiceCollection } from "./serviceCollection";
 import { Trace } from "./trace";
-import { LinkedList } from "vs/base/common/linkedList";
-import { IdleValue } from "vs/base/common/async";
-import { Event } from "vs/base/common/event";
-import { illegalState } from "vs/base/common/errors";
-import { toDisposable } from "vs/base/common/lifecycle";
+import { LinkedList } from "./utils/linkedList";
+import { IdleValue } from "./utils/async";
+import { Event } from "./utils/event";
+import { illegalState } from "./utils/errors";
+import { toDisposable } from "./utils/lifecycle";
 
 // TRACING
 const _enableAllTracing = false;

@@ -1,15 +1,17 @@
 {
-  "name": "ioc-demo",
+  "name": "di-architecture",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha --ui tdd  --require ts-node/register ./test/**/*.ts"
   },
-  "author": "",
+  "author": "Perry",
   "license": "ISC",
   "devDependencies": {
+    "@types/assert": "^1.5.6",
     "@types/mocha": "^10.0.1",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1"
   }
 }

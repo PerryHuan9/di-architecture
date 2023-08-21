@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from "assert";
-import { Emitter, Event } from "vs/base/common/event";
-import { dispose } from "vs/base/common/lifecycle";
+import { Emitter, Event } from "../src/utils/event";
+import { dispose } from "../src/utils/lifecycle";
 
 import {
     SyncDescriptor,
