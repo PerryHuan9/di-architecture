@@ -1,21 +1,16 @@
-import { ILoggerService } from "./logger-service.interface";
+import { ILoggerService } from './logger-service.interface';
 
 export class MyLoggerService implements ILoggerService {
-    log(...arg: any[]): void {
-        throw new Error("Method not implemented.");
-    }
-    info(...arg: any[]): void {
-        throw new Error("Method not implemented.");
-    }
-    error(...arg: any[]): void {
-        throw new Error("Method not implemented.");
-    }
-    warn(...arg: any[]): void {
-        throw new Error("Method not implemented.");
-    }
+  log(...arg: any[]): void {
+    console.log(...arg);
+  }
+  info(...arg: any[]): void {
+    console.info(...arg);
+  }
+  error(...arg: any[]): void {
+    console.error(...arg);
+  }
+  warn(...arg: any[]): void {
+    console.warn(...arg);
+  }
 }
-
-
-
-
-
