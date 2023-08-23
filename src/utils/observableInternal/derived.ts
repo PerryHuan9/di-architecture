@@ -1,88 +1,12 @@
-
-import { BugIndicatingError } from "../errors";
-import { DisposableStore } from "../lifecycle";
-import {
-  IReader,
-  IObservable,
-  BaseObservable,
-  IObserver,
-  _setDerived,
-  IChangeContext,
-  getFunctionName,
-} from "./base";
-import { getLogger } from "./logging";
+import { BugIndicatingError } from '../errors';
+import { IReader, IObservable, BaseObservable, IObserver, _setDerived, IChangeContext, getFunctionName } from './base';
+import { getLogger } from './logging';
 
 export type EqualityComparer<T> = (a: T, b: T) => boolean;
 const defaultEqualityComparer: EqualityComparer<any> = (a, b) => a === b;
 
-export function derived<T>(
-  computeFn: (reader: IReader) => T,
-  debugName?: string | (() => string)
-): IObservable<T> {
-  return new Derived(
-    debugName,
-    computeFn,
-    undefined,
-    undefined,
-    undefined,
-    defaultEqualityComparer
-  );
-}
-
-export function derivedOpts<T>(
-  options: {
-    debugName?: string | (() => string);
-    equalityComparer?: EqualityComparer<T>;
-  },
-  computeFn: (reader: IReader) => T
-): IObservable<T> {
-  return new Derived(
-    options.debugName,
-    computeFn,
-    undefined,
-    undefined,
-    undefined,
-    options.equalityComparer ?? defaultEqualityComparer
-  );
-}
-
-export function derivedHandleChanges<T, TChangeSummary>(
-  debugName: string | (() => string),
-  options: {
-    createEmptyChangeSummary: () => TChangeSummary;
-    handleChange: (
-      context: IChangeContext,
-      changeSummary: TChangeSummary
-    ) => boolean;
-  },
-  computeFn: (reader: IReader, changeSummary: TChangeSummary) => T
-): IObservable<T> {
-  return new Derived(
-    debugName,
-    computeFn,
-    options.createEmptyChangeSummary,
-    options.handleChange,
-    undefined,
-    defaultEqualityComparer
-  );
-}
-
-export function derivedWithStore<T>(
-  name: string,
-  computeFn: (reader: IReader, store: DisposableStore) => T
-): IObservable<T> {
-  const store = new DisposableStore();
-  return new Derived(
-    name,
-    (r) => {
-      store.clear();
-      return computeFn(r, store);
-    },
-    undefined,
-    undefined,
-    () => store.dispose(),
-    defaultEqualityComparer
-  );
+export function derived<T>(computeFn: (reader: IReader) => T, debugName?: string | (() => string)): IObservable<T> {
+  return new Derived(debugName, computeFn, undefined, undefined, undefined, defaultEqualityComparer);
 }
 
 _setDerived(derived);
@@ -109,10 +33,7 @@ const enum DerivedState {
   upToDate = 3,
 }
 
-export class Derived<T, TChangeSummary = any>
-  extends BaseObservable<T, void>
-  implements IReader, IObserver
-{
+export class Derived<T, TChangeSummary = any> extends BaseObservable<T, void> implements IReader, IObserver {
   private state = DerivedState.initial;
   private value: T | undefined = undefined;
   private updateCount = 0;
@@ -122,27 +43,18 @@ export class Derived<T, TChangeSummary = any>
 
   public override get debugName(): string {
     if (!this._debugName) {
-      return getFunctionName(this._computeFn) || "(anonymous)";
+      return getFunctionName(this._computeFn) || '(anonymous)';
     }
-    return typeof this._debugName === "function"
-      ? this._debugName()
-      : this._debugName;
+    return typeof this._debugName === 'function' ? this._debugName() : this._debugName;
   }
 
   constructor(
     private readonly _debugName: string | (() => string) | undefined,
-    public readonly _computeFn: (
-      reader: IReader,
-      changeSummary: TChangeSummary
-    ) => T,
+    public readonly _computeFn: (reader: IReader, changeSummary: TChangeSummary) => T,
     private readonly createChangeSummary: (() => TChangeSummary) | undefined,
-    private readonly _handleChange:
-      | ((context: IChangeContext, summary: TChangeSummary) => boolean)
-      | undefined,
-    private readonly _handleLastObserverRemoved:
-      | (() => void)
-      | undefined = undefined,
-    private readonly _equalityComparator: EqualityComparer<T>
+    private readonly _handleChange: ((context: IChangeContext, summary: TChangeSummary) => boolean) | undefined,
+    private readonly _handleLastObserverRemoved: (() => void) | undefined = undefined,
+    private readonly _equalityComparator: EqualityComparer<T>,
   ) {
     super();
     this.changeSummary = this.createChangeSummary?.();
@@ -227,8 +139,7 @@ export class Derived<T, TChangeSummary = any>
       this.dependenciesToBeRemoved.clear();
     }
 
-    const didChange =
-      hadValue && !this._equalityComparator(oldValue!, this.value);
+    const didChange = hadValue && !this._equalityComparator(oldValue!, this.value);
 
     getLogger()?.handleDerivedRecomputed(this, {
       oldValue,
@@ -297,14 +208,8 @@ export class Derived<T, TChangeSummary = any>
     }
   }
 
-  public handleChange<T, TChange>(
-    observable: IObservable<T, TChange>,
-    change: TChange
-  ): void {
-    if (
-      this.dependencies.has(observable) &&
-      !this.dependenciesToBeRemoved.has(observable)
-    ) {
+  public handleChange<T, TChange>(observable: IObservable<T, TChange>, change: TChange): void {
+    if (this.dependencies.has(observable) && !this.dependenciesToBeRemoved.has(observable)) {
       const shouldReact = this._handleChange
         ? this._handleChange(
             {
@@ -312,15 +217,11 @@ export class Derived<T, TChangeSummary = any>
               change,
               didChange: (o) => o === (observable as any),
             },
-            this.changeSummary!
+            this.changeSummary!,
           )
         : true;
       const wasUpToDate = this.state === DerivedState.upToDate;
-      if (
-        shouldReact &&
-        (this.state === DerivedState.dependenciesMightHaveChanged ||
-          wasUpToDate)
-      ) {
+      if (shouldReact && (this.state === DerivedState.dependenciesMightHaveChanged || wasUpToDate)) {
         this.state = DerivedState.stale;
         if (wasUpToDate) {
           for (const r of this.observers) {
@@ -344,8 +245,7 @@ export class Derived<T, TChangeSummary = any>
   }
 
   public override addObserver(observer: IObserver): void {
-    const shouldCallBeginUpdate =
-      !this.observers.has(observer) && this.updateCount > 0;
+    const shouldCallBeginUpdate = !this.observers.has(observer) && this.updateCount > 0;
     super.addObserver(observer);
 
     if (shouldCallBeginUpdate) {
@@ -354,8 +254,7 @@ export class Derived<T, TChangeSummary = any>
   }
 
   public override removeObserver(observer: IObserver): void {
-    const shouldCallEndUpdate =
-      this.observers.has(observer) && this.updateCount > 0;
+    const shouldCallEndUpdate = this.observers.has(observer) && this.updateCount > 0;
     super.removeObserver(observer);
 
     if (shouldCallEndUpdate) {
