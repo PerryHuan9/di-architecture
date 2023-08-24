@@ -11,7 +11,9 @@ export namespace _util {
 
 // --- interfaces ------
 
-export type BrandedService = { _serviceBrand: undefined };
+export type BrandedService = {
+  // _serviceBrand: undefined
+};
 
 export interface IConstructorSignature<T, Args extends any[] = []> {
   new <Services extends BrandedService[]>(...args: [...Args, ...Services]): T;
