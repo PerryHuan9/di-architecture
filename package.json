@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "mocha --ui tdd  --require ts-node/register ./test/**/*.ts",
-    "build": "vite build"
+    "build": "vite build",
+    "deploy": "npm run build && yarn publish"
   },
   "author": "Perry",
   "license": "ISC",
