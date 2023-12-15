@@ -153,7 +153,7 @@ export function dispose<T extends IDisposable>(arg: T | Iterable<T> | undefined)
 		if (errors.length === 1) {
 			throw errors[0];
 		} else if (errors.length > 1) {
-			throw new AggregateError(errors, 'Encountered errors while disposing of store');
+			throw 'Encountered errors while disposing of store';
 		}
 
 		return Array.isArray(arg) ? [] : arg;

@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "target": "ESNext",
-    "experimentalDecorators": true
+    "target": "ES5",
+    "outFile": "dist/index.js",
+    "experimentalDecorators": true,
+    "declaration": true,
+    "noEmitOnError": true,
+    "downlevelIteration": true,
+    "module": "System",
+    
   },
   "include": ["./src/**/*"]
 }
