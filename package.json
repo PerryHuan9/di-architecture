@@ -1,18 +1,14 @@
 {
   "name": "di-architecture",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "",
   "main": "./dist/index.js",
-  "exports": {
-    "require": "./dist/index.js",
-    "default": "./dist/index.mjs"
-  },
   "files": [
     "dist"
   ],
   "scripts": {
     "test": "mocha --ui tdd  --require ts-node/register ./test/**/*.ts",
-    "build": "tsc",
+    "build": "rm -r dist && tsc",
     "deploy": "npm run build && yarn publish"
   },
   "author": "Perry",

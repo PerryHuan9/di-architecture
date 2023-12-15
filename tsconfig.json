@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
     "target": "ES5",
-    "outFile": "dist/index.js",
     "experimentalDecorators": true,
     "declaration": true,
     "noEmitOnError": true,
     "downlevelIteration": true,
-    "module": "System",
+    "module": "CommonJS",
     
   },
   "include": ["./src/**/*"]
